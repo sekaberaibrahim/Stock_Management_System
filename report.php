@@ -49,6 +49,17 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
         a:hover {
             text-decoration: underline;
         }
+       .download-button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+       .download-button:hover {
+            background-color: #3e8e41;
+        }
     </style>
 </head>
 <body>
@@ -64,36 +75,39 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
             </tr>
         </thead>
         <tbody>
-            <?php while ($product = $products_in->fetch_assoc()) { ?>
+            <?php while ($product = $products_in->fetch_assoc()) {?>
             <tr>
-                <td><?php echo htmlspecialchars($product['ProductCode']); ?></td>
-                <td><?php echo htmlspecialchars($product['prin_Date']); ?></td>
-                <td><?php echo htmlspecialchars($product['prin_Quantity']); ?></td>
-                <td><?php echo htmlspecialchars($product['prin_Unit_Price']); ?></td>
-                <td><?php echo htmlspecialchars($product['prin_TotalPrice']); ?></td>
+                <td><?php echo htmlspecialchars($product['ProductCode']);?></td>
+                <td><?php echo htmlspecialchars($product['prin_Date']);?></td>
+                <td><?php echo htmlspecialchars($product['prin_Quantity']);?></td>
+                <td><?php echo htmlspecialchars($product['prin_Unit_Price']);?></td>
+                <td><?php echo htmlspecialchars($product['prin_TotalPrice']);?></td>
             </tr>
-            <?php } ?>
+            <?php }?>
         </tbody>
     </table>
-    <a href="dashboard.php">Back to Dashboard</a>
-
+    <footer>
+        <a href="dashboard.php" style="font-size: 1.2em; color: #0000ff; text-decoration: none; margin-top: 20px; display: block; text-align: center;">Back to Dashboard</a>
+        <button class="download-button" onclick="downloadReport()">Download Report</button>
+    </footer>
     <script>
-        // Optional JavaScript for functionality enhancements sorting table rows by clicking on headers
-        document.addEventListener('DOMContentLoaded', function() {
-            const headers = document.querySelectorAll('table th');
-            headers.forEach(header => {
-                header.addEventListener('click', () => {
-                    const index = header.cellIndex;
-                    const rows = Array.from(document.querySelectorAll('table tbody tr'));
-                    rows.sort((a, b) => {
-                        const cellA = a.cells[index].textContent.trim();
-                        const cellB = b.cells[index].textContent.trim();
-                        return isNaN(cellA) ? cellA.localeCompare(cellB) : parseFloat(cellA) - parseFloat(cellB);
-                    });
-                    rows.forEach(row => row.parentNode.appendChild(row)); // Re-append sorted rows
-                });
-            });
-        });
+        function downloadReport() {
+            const table = document.querySelector('table');
+            const rows = table.rows;
+            const csvContent = [];
+            for (let i = 0; i < rows.length; i++) {
+                const row = [];
+                for (let j = 0; j < rows[i].cells.length; j++) {
+                    row.push(rows[i].cells[j].textContent.trim());
+                }
+                csvContent.push(row.join(','));
+            }
+            const csvBlob = new Blob([csvContent.join('\n')], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(csvBlob);
+            link.download = 'daily_stock_status_report.csv';
+            link.click();
+        }
     </script>
 </body>
 </html>
