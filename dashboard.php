@@ -134,7 +134,7 @@ if (!isset($_SESSION["username"])) {
         <ul>
             <li><a href="products_list.php">Products</a></li>
             <li><a href="productin.php">Product In</a></li>
-            <li><a href="productin.php">Product Out</a></li>
+            <li><a href="">Product Out</a></li>
             <li><a href="report.php">Daily Stock Status</a></li>
             <li><a href="logout.php">Logout</a></li>
         </ul>

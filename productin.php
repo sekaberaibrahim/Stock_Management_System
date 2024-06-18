@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $products = $conn->query("SELECT * FROM Products");
+$productin_data = $conn->query("SELECT * FROM Productin");
+
 ?>
 
 <!DOCTYPE html>
@@ -80,6 +82,44 @@ $products = $conn->query("SELECT * FROM Products");
         a:hover {
             color: #23527c;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #337ab7;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .action-btn {
+            background-color: #337ab7;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .action-btn:hover {
+            background-color: #23527c;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #bd2130;
+        }
     </style>
 </head>
 <body>
@@ -105,27 +145,52 @@ $products = $conn->query("SELECT * FROM Products");
     </form>
     <a href="dashboard.php">Back to Dashboard</a>
 
+    <h2>Product In Records</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Product Code</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+            <th>Actions</th>
+        </tr>
+        <?php while ($row = $productin_data->fetch_assoc()) {?>
+        <tr>
+            <td><?php echo $row['prin_Date'];?></td>
+            <td><?php echo $row['ProductCode'];?></td>
+            <td><?php echo $row['prin_Quantity'];?></td>
+            <td><?php echo $row['prin_Unit_Price'];?></td>
+            <td><?php echo $row['prin_TotalPrice'];?></td>
+            <td>
+                <button class="action-btn">Update</button>
+                <button class="delete-btn">Delete</button>
+            </td>
+        </tr>
+        <?php }?>
+    </table>
+
     <script>
-        // Add event listener to the form
-        document.querySelector('form').addEventListener('submit', function(event) {
-            // Prevent default form submission
-            event.preventDefault();
+        document.querySelectorAll('.delete-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var row = this.parentNode.parentNode;
+                var product_code = row.children[1].textContent;
+                var prin_date = row.children[0].textContent;
 
-            // Get the form data
-            var formData = new FormData(this);
-
-            // Send the form data to the server using AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'productin.php', true);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    console.log('Form submitted successfully!');
-                    window.location.href = 'productin.php';
-                } else {
-                    console.log('Error submitting form!');
+                if (confirm('Are you sure you want to delete this record?')) {
+                    window.location.href = 'delete_productin.php?product_code=' + product_code + '&prin_date=' + prin_date;
                 }
-            };
-            xhr.send(formData);
+            });
+        });
+
+        document.querySelectorAll('.action-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var row = this.parentNode.parentNode;
+                var product_code = row.children[1].textContent;
+                var prin_date = row.children[0].textContent;
+
+                window.location.href = 'update_productin.php?product_code=' + product_code + '&prin_date=' + prin_date;
+            });
         });
     </script>
 </body>
