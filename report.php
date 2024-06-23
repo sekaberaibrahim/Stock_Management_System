@@ -2,7 +2,13 @@
 require_once 'functions.php';
 require_once 'db.php';
 
-$products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()");
+if (isset($_POST['date'])) {
+    $selected_date = $_POST['date'];
+    $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = '$selected_date'");
+} else {
+    $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()");
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +55,36 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
         a:hover {
             text-decoration: underline;
         }
+       .report-form {
+            margin: 20px auto;
+            width: 50%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+       .report-form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+       .report-form input[type="date"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+       .report-form button[type="submit"] {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+       .report-form button[type="submit"]:hover {
+            background-color: #3e8e41;
+        }
        .download-button {
             background-color: #4CAF50;
             color: #fff;
@@ -56,6 +92,9 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            text-align: center;
         }
        .download-button:hover {
             background-color: #3e8e41;
@@ -64,6 +103,13 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
 </head>
 <body>
     <h2>Daily Stock Status Report</h2>
+    <div class="report-form">
+        <form action="" method="post">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" value="<?php echo date('Y-m-d');?>">
+            <button type="submit">Generate Report</button>
+        </form>
+    </div>
     <table>
         <thead>
             <tr>
@@ -87,7 +133,7 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
         </tbody>
     </table>
     <footer>
-        <a href="dashboard.php" style="font-size: 1.2em; color: #0000ff; text-decoration: none; margin-top: 20px; display: block; text-align: center;">Back to Dashboard</a>
+     
         <button class="download-button" onclick="downloadReport()">Download Report</button>
     </footer>
     <script>
@@ -111,3 +157,8 @@ $products_in = $conn->query("SELECT * FROM Productin WHERE prin_Date = CURDATE()
     </script>
 </body>
 </html>
+<div class="footer" style="background-color: #f0f0f0; padding: 10px; text-align: center; color: #666;">
+    <button class="back-btn" style="background-color: #4CAF50; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onclick="location.href='dashboard.php'">Back to Dashboard</button>
+    <p style="color: #666;">&copy; 2024 💻 Ski Codes </></p>
+  </div>
+</div>

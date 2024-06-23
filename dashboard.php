@@ -134,7 +134,7 @@ if (!isset($_SESSION["username"])) {
         <ul>
             <li><a href="products_list.php">Products</a></li>
             <li><a href="productin.php">Product In</a></li>
-            <li><a href="">Product Out</a></li>
+            
             <li><a href="report.php">Daily Stock Status</a></li>
             <li><a href="users.php">Users</a></li>
             <li><a href="logout.php">Logout</a></li>
@@ -142,4 +142,8 @@ if (!isset($_SESSION["username"])) {
     </div>
     <script src="script.js"></script>
 </body>
+<div class="footer" style="background-color: #f0f0f0; padding: 10px; text-align: center; color: #666;">
+    <p style="color: #666;">&copy; 2024 💻 Ski Codes </></p>
+  </div>
+</div>
 </html>

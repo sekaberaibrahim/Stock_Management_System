@@ -1,207 +1,236 @@
-<?php
-session_start();
-include('db.php');
+<style>
+ .container {
+    width: 80%;
+    margin: 50px auto;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+  h2 {
+    text-align: center;
+    color: #4CAF50;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  label {
+    color: #4CAF50;
+    font-weight: bold;
+  }
+  input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  input[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  input[type="submit"]:hover {
+    background-color: #3e8e41;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+ .action-btn {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+ .action-btn:hover {
+    background-color: #3e8e41;
+  }
+ .success-message {
+    color: green;
+    margin-top: 10px;
+    text-align: center;
+  }
+ .error-message {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+  }
+ .back-btn {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+ .back-btn:hover {
+    background-color: #3e8e41;
+  }
+ .footer {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+    color: #666;
+  }
+ .delete-btn {
+    background-color: #FF0000;
+    color: #fff;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+ .delete-btn:hover {
+    background-color: #CC0000;
+  }
+</style>
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
+<div class="container">
+  <h2>Productin</h2>
 
-// Add Productin
-if (isset($_POST['add'])) {
+  <?php
+  $conn = mysqli_connect("localhost", "root", "", "STORE");
+  if (!$conn) {
+    die("Connection failed: ". mysqli_connect_error());
+  }
+
+  if (isset($_POST['create_productin'])) {
     $product_code = $_POST['product_code'];
     $prin_date = $_POST['prin_date'];
     $prin_quantity = $_POST['prin_quantity'];
     $prin_unit_price = $_POST['prin_unit_price'];
-    $prin_total_price = $prin_quantity * $prin_unit_price;
 
-    $sql = "INSERT INTO Productin (ProductCode, prin_Date, prin_Quantity, prin_Unit_Price, prin_TotalPrice) 
-            VALUES ('$product_code', '$prin_date', '$prin_quantity', '$prin_unit_price', '$prin_total_price')";
-    $conn->query($sql);
-}
+    $query = "INSERT INTO Productin (ProductCode, prin_Date, prin_Quantity, prin_Unit_Price) VALUES ('$product_code', '$prin_date', '$prin_quantity', '$prin_unit_price')";
+    mysqli_query($conn, $query);
+    echo "<p class='success-message'>Productin created successfully!</p>";
+  }
 
-// Update Productin
-if (isset($_POST['update'])) {
-    $productin_id = $_POST['productin_id'];
+  if (isset($_POST['update_productin'])) {
+    $id = $_POST['id'];
     $product_code = $_POST['product_code'];
     $prin_date = $_POST['prin_date'];
     $prin_quantity = $_POST['prin_quantity'];
     $prin_unit_price = $_POST['prin_unit_price'];
-    $prin_total_price = $prin_quantity * $prin_unit_price;
 
-    $sql = "UPDATE Productin 
-            SET ProductCode='$product_code', prin_Date='$prin_date', prin_Quantity='$prin_quantity', prin_Unit_Price='$prin_unit_price', prin_TotalPrice='$prin_total_price' 
-            WHERE Productin_id='$productin_id'";
-    $conn->query($sql);
-}
+    $query = "UPDATE Productin SET ProductCode = '$product_code', prin_Date = '$prin_date', prin_Quantity = '$prin_quantity', prin_Unit_Price = '$prin_unit_price' WHERE Productin_id = '$id'";
+    mysqli_query($conn, $query);
+    echo "<p class='success-message'>Productin updated successfully!</p>";
+  }
 
-// Delete Productin
-if (isset($_GET['delete'])) {
-    $productin_id = $_GET['delete'];
-    $sql = "DELETE FROM Productin WHERE Productin_id='$productin_id'";
-    $conn->query($sql);
-}
+  if (isset($_GET['delete'])) {
+    $id = $_GET['id'];
 
-// Retrieve Productin records
-$sql = "SELECT * FROM Productin";
-$result = $conn->query($sql);
+    $query = "DELETE FROM Productin WHERE Productin_id = '$id'";
+    mysqli_query($conn, $query);
+    echo "<p class='success-message'>Productin deleted successfully!</p>";
+  }
+ ?>
+
+  <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
+   <label for="product_code">Product Code:</label>
+    <select id="product_code" name="product_code">
+      <?php
+      $query = "SELECT * FROM Products";
+      $result = mysqli_query($conn, $query);
+      while ($row = mysqli_fetch_assoc($result)) {
+        echo "<option value='". $row['ProductCode']. "'>". $row['ProductName']. " (". $row['ProductCode']. ")</option>";
+      }
+    ?>
+    </select><br><br>
+    <label for="prin_date">Prin Date:</label>
+    <input type="date" id="prin_date" name="prin_date"><br><br>
+    <label for="prin_quantity">Prin Quantity:</label>
+    <input type="number" id="prin_quantity" name="prin_quantity"><br><br>
+    <label for="prin_unit_price">Prin Unit Price:</label>
+    <input type="number" step="0.01" id="prin_unit_price" name="prin_unit_price"><br><br>
+    <input type="submit" name="create_productin" value="Create Productin">
+  </form>
+
+  <table>
+    <tr>
+      <th>Productin ID</th>
+      <th>Product Code</th>
+      <th>Product Name</th>
+      <th>Prin Date</th>
+      <th>Prin Quantity</th>
+      <th>Prin Unit Price</th>
+      <th>Prin Total Price</th>
+      <th>Actions</th>
+    </tr>
+    <?php
+    $query = "SELECT p.Productin_id, p.ProductCode, pr.ProductName, p.prin_Date, p.prin_Quantity, p.prin_Unit_Price, p.prin_TotalPrice
+             FROM Productin p
+             JOIN Products pr ON p.ProductCode = pr.ProductCode";
+    $result = mysqli_query($conn, $query);
+    while ($row = mysqli_fetch_assoc($result)) {
+      echo "<tr>";
+      echo "<td>". $row['Productin_id']. "</td>";
+      echo "<td>". $row['ProductCode']. "</td>";
+      echo "<td>". $row['ProductName']. "</td>";
+      echo "<td>". $row['prin_Date']. "</td>";
+      echo "<td>". $row['prin_Quantity']. "</td>";
+      echo "<td>". $row['prin_Unit_Price']. "</td>";
+      echo "<td>". $row['prin_TotalPrice']. "</td>";
+      echo "<td><a href='".$_SERVER['PHP_SELF']."?id=". $row['Productin_id']. "&update=true'><button class='action-btn'>Update</button></a> | <button class='delete-btn' onclick=\"if(confirm('Are you sure you want to delete this productin?')){location.href='".$_SERVER['PHP_SELF']."?id=". $row['Productin_id']. "&delete=true'}\">Delete</button></td>";
+      echo "</tr>";
+    }
+  ?>
+  </table>
+
+  <?php
+  if (isset($_GET['update'])) {
+    $id = $_GET['id'];
+
+    $query = "SELECT p.Productin_id, p.ProductCode, pr.ProductName, p.prin_Date, p.prin_Quantity, p.prin_Unit_Price
+             FROM Productin p
+             JOIN Products pr ON p.ProductCode = pr.ProductCode
+             WHERE p.Productin_id = '$id'";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_assoc($result);
 
 ?>
+    <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
+      <input type="hidden" name="id" value="<?php echo $id;?>">
+      <label for="product_code">Product Code:</label>
+      <select id="product_code" name="product_code">
+        <?php
+        $query = "SELECT * FROM Products";
+        $result = mysqli_query($conn, $query);
+        while ($row_product = mysqli_fetch_assoc($result)) {
+          if ($row_product['ProductCode'] == $row['ProductCode']) {
+            echo "<option value='". $row_product['ProductCode']. "' selected>". $row_product['ProductName']. " (". $row_product['ProductCode']. ")</option>";
+          } else {
+            echo "<option value='". $row_product['ProductCode']. "'>". $row_product['ProductName']. " (". $row_product['ProductCode']. ")</option>";
+          }
+        }
+      ?>
+      </select><br><br>
+      <label for="prin_date">Prin Date:</label>
+      <input type="date" id="prin_date" name="prin_date" value="<?php echo $row['prin_Date'];?>"><br><br>
+      <label for="prin_quantity">Prin Quantity:</label>
+      <input type="number" id="prin_quantity" name="prin_quantity" value="<?php echo $row['prin_Quantity'];?>"><br><br>
+      <label for="prin_unit_price">Prin Unit Price:</label>
+      <input type="number" step="0.01" id="prin_unit_price" name="prin_unit_price" value="<?php echo $row['prin_Unit_Price'];?>"><br><br>
+      <input type="submit" name="update_productin" value="Update Productin">
+    </form>
+    <?php
+  }
+?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product In Management</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 80%;
-            margin: 50px auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        h2 {
-            text-align: center;
-            color: #4CAF50;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        label {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            color: #4CAF50;
-        }
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-        .actions button, .actions a {
-            padding: 5px 10px;
-            font-size: 14px;
-            border-radius: 5px;
-        }
-        .actions a {
-            text-decoration: none;
-            color: #fff;
-            background-color: red;
-        }
-        .actions a:hover {
-            background-color: darkred;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Product In Management</h2>
-
-        <!-- Add Productin Form -->
-        <form method="POST" action="productin.php">
-            <input type="hidden" name="productin_id" id="productin_id">
-            <label for="product_code">Product Code:</label>
-            <input type="number" name="product_code" id="product_code" required>
-            <label for="prin_date">Date:</label>
-            <input type="date" name="prin_date" id="prin_date" required>
-            <label for="prin_quantity">Quantity:</label>
-            <input type="number" name="prin_quantity" id="prin_quantity" required>
-            <label for="prin_unit_price">Unit Price:</label>
-            <input type="number" step="0.01" name="prin_unit_price" id="prin_unit_price" required>
-            <button type="submit" name="add" id="add_button">Add Productin</button>
-            <button type="submit" name="update" id="update_button" style="display: none;">Update Productin</button>
-        </form>
-
-        <!-- Display Productin Records -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Productin ID</th>
-                    <th>Product Code</th>
-                    <th>Date</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total Price</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $result->fetch_assoc()) { ?>
-                    <tr>
-                        <td><?php echo $row['Productin_id']; ?></td>
-                        <td><?php echo $row['ProductCode']; ?></td>
-                        <td><?php echo $row['prin_Date']; ?></td>
-                        <td><?php echo $row['prin_Quantity']; ?></td>
-                        <td><?php echo $row['prin_Unit_Price']; ?></td>
-                        <td><?php echo $row['prin_TotalPrice']; ?></td>
-                        <td class="actions">
-                            <button onclick="editProductin(<?php echo $row['Productin_id']; ?>, <?php echo $row['ProductCode']; ?>, '<?php echo $row['prin_Date']; ?>', <?php echo $row['prin_Quantity']; ?>, <?php echo $row['prin_Unit_Price']; ?>)">Edit</button>
-                            <a href="productin.php?delete=<?php echo $row['Productin_id']; ?>">Delete</a>
-                        </td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-
-        <a href="dashboard.php">Back to Dashboard</a>
-    </div>
-
-    <script>
-        function editProductin(productin_id, product_code, prin_date, prin_quantity, prin_unit_price) {
-            document.getElementById('productin_id').value = productin_id;
-            document.getElementById('product_code').value = product_code;
-            document.getElementById('prin_date').value = prin_date;
-            document.getElementById('prin_quantity').value = prin_quantity;
-            document.getElementById('prin_unit_price').value = prin_unit_price;
-            document.getElementById('add_button').style.display = 'none';
-            document.getElementById('update_button').style.display = 'inline';
-        }
-    </script>
-</body>
-</html>
+<div class="footer" style="background-color: #f0f0f0; padding: 10px; text-align: center; color: #666;">
+    <button class="back-btn" style="background-color: #4CAF50; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;" onclick="location.href='dashboard.php'">Back to Dashboard</button>
+    <p style="color: #666;">&copy; 2024 💻 Ski Codes </></p>
+  </div>
+</div>

@@ -111,4 +111,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 </body>
+
+
+</div>
 </html>
+<div class="footer" style="background-color: #f0f0f0; padding: 10px; text-align: center; color: #666;">
+    <p style="color: #666;">&copy; 2024 💻 Ski Codes </></p>
+  </div>
